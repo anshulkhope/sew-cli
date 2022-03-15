@@ -1,0 +1,23 @@
+{
+  "name": "sew",
+  "version": "0.0.1",
+  "description": "The CLI Tool for SeaWave Framework (Se for Sea and w for wave).",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ."
+  },
+  "keywords": [
+    "sew",
+    "seawave",
+    "cli"
+  ],
+  "author": "Anshul Khope",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.3",
+    "inquirer": "^8.2.0"
+  },
+  "bin": {
+    "sew": "./index.js"
+  }
+}

@@ -1,0 +1,21 @@
+<sew-container name="container">
+	Hello World! Some test things down here:-
+	
+	<sew-button color="primary" exec="changeColor('primary')">Primary</sew-button>
+	<sew-button color="secondary" exec="changeColor('secondary')">Secondary</sew-button>
+	<sew-button color="info" exec="changeColor('info')">Info</sew-button>
+	<sew-button color="success" exec="changeColor('success')">Success</sew-button>
+	<sew-button color="danger" exec="changeColor('danger')">Danger</sew-button>
+	<sew-button color="warning" exec="changeColor('warning')">Warning</sew-button>
+	<sew-button color="dark" exec="changeColor('dark')">Dark</sew-button>
+</sew-container>
+
+<sew-container>
+	Input change:-
+	<br>
+	<sew-input name="textinput" hint="Enter your name..." *change="changeText"></sew-input>
+
+	<sew-text name="text-wrapper" color="dark">Hello 
+		<sew-text name="text" color="dark">World!</sew-text>
+	</sew-text>
+</sew-container>
