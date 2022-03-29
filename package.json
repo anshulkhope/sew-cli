@@ -1,5 +1,5 @@
 {
-  "name": "sew",
+  "name": "@anshulkhope/sew-cli",
   "version": "0.0.1",
   "description": "The CLI Tool for SeaWave Framework (Se for Sea and w for wave).",
   "main": "index.js",
@@ -11,6 +11,10 @@
     "seawave",
     "cli"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/anshulkhope/sew-cli.git"
+  },
   "author": "Anshul Khope",
   "license": "MIT",
   "dependencies": {

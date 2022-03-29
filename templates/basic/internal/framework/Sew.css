@@ -11,13 +11,23 @@
 	--sew-color-secondary: #86cfb1;
 	--sew-color-info: #05b7e4;
 	--sew-color-success: #16ad37;
-	--sew-color-danger: #e43636;
+	--sew-color-danger: #da4545;
 	--sew-color-warning: #ffeb35;
-	--sew-color-dark: #3c3c3c;
+	--sew-color-dark: #313133;
 	--sew-color-light: #f1f1f1;
 
-	--sew-default-text-color: var(--sew-color-dark);
+	--sew-card-shadow-light: #f1f1f1;
+	--sew-card-shadow-dark: #171717;
+	--sew-card-background-dark: #252525;
+
+	--sew-scrollbar-light: #7c7c7c;
+	--sew-scrollbar-dark: cornflowerblue;
 	
+	--sew-text-color: var(--sew-color-dark);
+	--sew-card-shadow: var(--sew-card-shadow-light);
+	--sew-card-background: #fff;
+	--sew-scrollbar-color: var(--sew-scrollbar-light);
+
 	--sew-font: -apple-system, BlinkMacSystemFont, "Segoe UI",
                Roboto, Oxygen-Sans, Ubuntu, Cantarell,
                "Helvetica Nue", sans-serif;
@@ -49,22 +59,49 @@ sew-app {
 
 .sew-theme-dark {
 	--sew-background: var(--sew-color-background-dark);
-	--sew-default-text-color: var(--sew-color-light);
+	--sew-text-color: var(--sew-color-light);
+	--sew-card-shadow: var(--sew-card-shadow-dark);
+	--sew-card-background: var(--sew-card-background-dark);
+	--sew-scrollbar-color: var(--sew-scrollbar-dark);
 }
-
+/* 
 .sew-theme-light {
 	--sew-background: var(--sew-color-background-light);
-}
+	--sew-text-color: var(--sew-color-dark);
+	--sew-card-shadow: var(--sew-card-shadow-light);
+	--sew-card-background: var(--sew-card-background-light);
+	--sew-
+} */
 
 .sew-cursor-default {
 	cursor: default !important;
+}
+
+::-webkit-scrollbar {
+	width: 12px;
+	background-color: #f1f1f1;
+}
+
+select {
+	
+}
+
+::-webkit-scrollbar-thumb {
+	transition-duration: 3s;
+	background-color: var(--sew-scrollbar-color);
+	border-radius: 12px;
+}
+
+input[type=file] {
+	display: none;
+	opacity: 0;
 }
 
 .sew-mat-item {
 	user-select: none;
 	cursor: pointer;
 	display: inline-block;
-	color: var(--sew-default-text-color);
+	color: var(--sew-text-color);
 	border: none;
 	outline: none;
 	font-family: var(--sew-font);
@@ -74,7 +111,7 @@ sew-app {
 }
 
 .sew-spinner {
-	display: inline-block;
+	display: block;
 	border: 0.4rem solid rgba(0, 0, 0, 0);
 	border-radius: 50%;
 	border: 4.5px solid #00000000;
@@ -117,7 +154,9 @@ sew-app {
 }
 
 .sew-button {
-	transition-duration: 90ms;
+	position: relative;
+	overflow: hidden;
+	transition-duration: 300ms;
 	padding-right: 1rem;
 	padding-left: 1rem;
 	padding-top: 0.7rem;
@@ -129,17 +168,19 @@ sew-app {
 	font-weight: 500;
 	font-size: 0.9rem;
 	color: #fff;
+	box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.5);
 }
 
-
+/* 
 .sew-button:hover {
 	transition-duration: 90ms;
 	transform: translateY(-1px);
-}
+} */
 
 .sew-button:active {
-	transition-duration: 90ms;
-	box-shadow: 0 2px 5px 2px inset rgba(0,0,0,0.5);
+	transition-duration: 300ms;
+	transition-timing-function: ease-in-out;
+	box-shadow: 0 3px 5px 3px inset rgba(0,0,0,0.5);
 	transform: translateY(1px);
 }
 
@@ -190,7 +231,7 @@ sew-app {
 }
 
 .sew-text-default {
-	color: var(--sew-default-text-color);
+	color: var(--sew-text-color);
 }
 
 .sew-text-primary {
@@ -253,27 +294,32 @@ sew-app {
 	display: block;
 	font-size: 1.2rem;
 	font-weight: 500;
+	padding-top: .9rem;
+	padding-bottom: .9rem;
 }
 
 [sizing=h2] {
 	display: block;
 	font-size: 1.5rem;
 	font-weight: 500;
+	padding-top: 1.5rem;
+	padding-bottom: 1.5rem;
 }
 
 [sizing=h1] {
 	display: block;
 	font-size: 1.95rem;
 	font-weight: 500;
+	padding-top: 1.5rem;
+	padding-bottom: 1.5rem;
 }
 
 .sew-ripple {
-	position: fixed;
+	position: absolute;
 	border-radius: 50%;
 	transform: scale(0);
 	animation: ripple 600ms linear;
 	background-color: rgba(255, 255, 255, 0.7);
-	width: 90px;
 }
 @keyframes ripple {
 	to {
@@ -473,10 +519,16 @@ sew-app {
 
 .sew-navtabs-item[active] {
 	background-color: grey;
+	color: #fff;
 }
 
 .sew-navtabs-item .active:hover {
 	background-color: grey !important;
+}
+
+.sew-navtabs-content {
+	display: none;
+	padding: 2rem;
 }
 
 .sew-toast, .sew-info {
@@ -671,6 +723,7 @@ sew-app {
 	display: flex;
 	align-items: center;
 	overflow: hidden;
+	justify-content: space-around;
 }
 
 .sew-overlay-body {
@@ -681,11 +734,13 @@ sew-app {
 
 .sew-footer {
 	display: block;
-	background: #f1f1f1;
+	background: #e5e5e5;
     padding: 22px;
     margin: 0;
 	z-index: 5;
 	color: #000;
+	text-align: center;
+	font-size: 15px;
 }
 
 .sew-card {
@@ -694,34 +749,32 @@ sew-app {
 	flex-direction: column;
 	min-width: 0;
 	word-wrap: break-word;
-	background-color: #fff;
+	background-color: var(--sea-default-card-background);
 	background-clip: border-box;
 	border: 1px solid rgba(0, 0, 0, 0.125);
 	border-radius: 0.25rem;
-	box-shadow: 0px 2px 4px 4px #f1f1f1;
+	box-shadow: 0px 2px 4px 4px var(--sew-card-shadow);
+	margin-bottom: 3rem;
 }
 
 .sew-card-body {
 	flex: 1 1 auto;
 	padding: 1rem 1rem;
 	color: #000;
-}
-
-.sew-card-body > p {
-	color: #000;
+	background-color: var(--sew-card-background);
 }
 
 .sew-card-head {
 	padding: 0.5rem 1rem;
 	margin-bottom: 0;
-	background-color: #fff;
-	border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+	background-color: var(--sew-card-background);
+	border-bottom: 1px solid rgba(255, 255, 255, 0.125);
 }
 
 .sew-card-title {
 	font-size: 1.2rem;
 	font-weight: 400;
-	color: #000;
+	color: var(--sew-text-color);
 }
 
 .sew-card-head > sew-img > img {
@@ -742,7 +795,7 @@ sew-app {
 	flex: 1 0 0%;
 	margin-right: 15px;
 	margin-left: 15px;
-	margin-bottom: 0;
+	margin-bottom: 15px;
 	height: 100%;
 	width: inherit;
 }
@@ -789,4 +842,13 @@ input[type=text], input[type=password], input[type=email] {
 }
 .sew-visible {
 	display: block !important;
+}
+
+[disabled] {
+    background-color: #a1a1a1;
+    color: var(--sew-color-dark);
+    box-shadow: none;
+    pointer-events: none;
+	filter: grayscale(100%);
+	user-select: none;
 }

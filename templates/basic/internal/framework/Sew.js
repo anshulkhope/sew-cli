@@ -24,7 +24,7 @@
  * other functions.
  */
 
-const Sew = {
+const sew = {
 
 	/**
 	 * @name addStyleRefs
@@ -33,7 +33,7 @@ const Sew = {
 	 * @param  {String} href The URL/path to the stylesheet.
 	 */
 	addStyleRefs: (href) => {
-		const e = Sew.elements.create('link', document.head, null, false);
+		const e = sew.elements.create('link', document.head, null, false);
 		e.setAttribute('href', href);
 		e.setAttribute('rel', 'stylesheet');
 
@@ -51,16 +51,16 @@ const Sew = {
 	 * @param  {String} message Message shown in the body of the toast.
 	 */
 	showQuickToast: (title, message) => {
-		const e = Sew.elements.create('sew-toast', document.body, '', false);
+		const e = sew.elements.create('sew-toast', document.body, '', false);
 		e.classList.add('sew-toast');
 		e.classList.add('show');
 
 
-		const head = Sew.elements.create('sew-toast-head', e, '', false);
+		const head = sew.elements.create('sew-toast-head', e, '', false);
 		head.classList.add('sew-toast-head');
-		Sew.elements.create('sew-toast-title', head, title, false)
+		sew.elements.create('sew-toast-title', head, title, false)
 			.classList.add('sew-toast-title');
-		const body = Sew.elements.create('sew-toast-body', e, message, false);
+		const body = sew.elements.create('sew-toast-body', e, message, false);
 		body.classList.add('sew-toast-body');
 
 
@@ -80,7 +80,7 @@ const Sew = {
 		if (document.querySelector('sew-info'))
 			document.querySelector('sew-info').remove();
 
-		const e = Sew.elements.create('sew-info', document.body, infomsg, false);
+		const e = sew.elements.create('sew-info', document.body, infomsg, false);
 		e.classList.add('sew-info');
 		e.classList.add('show');
 		e.classList.add('align-bottom');
@@ -90,10 +90,19 @@ const Sew = {
 		}, 1500);
 	},
 
+	/**
+	 * Loads a component class.
+	 * @param  {String} component The path to the component (`*.page.js`)
+	 * @returns `Promise<string>`
+	 */
 	loadComponent: async (component) => {
-		const res = await fetch(Sew.router.source + component);
+		const res = await fetch('src/' + component);
 		const componentClass = res.text();
 		return (new Function((await componentClass).toString() + 'return _swComponent;'))();
+	},
+
+	getFileData: (data) => {
+		return decodeURI(data);
 	},
 
 	/**
@@ -116,45 +125,45 @@ const Sew = {
 		 */
 		disable: (control, msgOnCtrlBreak) => {
 
-			if (control === 'inspect' && Sew.controls.shouldDisablecontrols) {
+			if (control === 'inspect' && sew.controls.shouldDisablecontrols) {
 				document.onkeydown = (e) => {
 					if (e.keyCode == 123) {
-						Sew.showQuickToast('Error', 'Inspect Element is disabled.');
+						sew.showQuickToast('Error', 'Inspect Element is disabled.');
 						return false;
 					}
 					if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) {
-						Sew.showQuickToast('Error', 'Inspect Element is disabled.');
+						sew.showQuickToast('Error', 'Inspect Element is disabled.');
 						return false;
 					}
 					if (e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) {
-						Sew.showQuickToast('Error', 'Inspect Element is disabled.');
+						sew.showQuickToast('Error', 'Inspect Element is disabled.');
 						return false;
 					}
 					if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) {
-						Sew.showQuickToast('Error', 'Inspect Element is disabled.');
+						sew.showQuickToast('Error', 'Inspect Element is disabled.');
 						return false;
 					}
 				}
 			}
-			else if (control === 'view-source' && Sew.controls.shouldDisablecontrols) {
+			else if (control === 'view-source' && sew.controls.shouldDisablecontrols) {
 				document.onkeydown = (e) => {
 					if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) {
-						Sew.showQuickToast('Error', 'View Source is disabled.');
+						sew.showQuickToast('Error', 'View Source is disabled.');
 						return false;
 					}
 				}
 			}
-			if (control === 'contextmenu' && Sew.controls.shouldDisablecontrols) {
+			if (control === 'contextmenu' && sew.controls.shouldDisablecontrols) {
 				document.oncontextmenu = function (e) {
-					Sew.showQuickToast('Error', 'Right Click is disabled.');
+					sew.showQuickToast('Error', 'Right Click is disabled.');
 					return false;
 				}
 			}
-			if (control === 'select' && Sew.controls.shouldDisablecontrols) {
+			if (control === 'select' && sew.controls.shouldDisablecontrols) {
 				document.onselectstart = (ev) => {
 					ev.preventDefault();
 				}
-				Sew.app.rootElement.classList.add('sew-cursor-default');
+				sew.app.rootElement.classList.add('sew-cursor-default');
 				return false;
 			}
 		}
@@ -166,8 +175,8 @@ const Sew = {
 	router: {
 
 		/**
-		 * All the page filenames to their contents. Used by the router to just put the
-		 * required page contents into the app RootElement.
+		 * All the component route names to their component classes. Used by the router
+		 * to just put the required page contents into the app rootElement.
 		 * @type Object
 		 * @default {}
 		 */
@@ -180,82 +189,66 @@ const Sew = {
 		 */
 		rootPath: '/',
 
-		source: '/src/',
-
-		/**
-		 * Returns a page name.
-		 * @param {String} page The page name.
-		 * @returns `String`
-		 */
-		getPageName: (page) => {
-			const _page = page.toLowerCase();
-			return _page;
-		},
-
 		/**
 		 * Start the router. Also loads all pages asynchronously to provide blazing fast output.
 		 */
 		start: async (app) => {
+
+			sew.router.rootPath = document.querySelector('base').href;
 			 
 			Object.values(app.pages).forEach(page => {
-				Sew.router.pages[page.name] = page.view;
+				sew.router.pages[page.name] = page.view;
 			});
+			
+			sew.app.rootElement.setAttribute('route', 'default');
+			sew.router.loading = false;
 
-			document.head.querySelector('base').href = Sew.router.rootPath;
-			
-			Sew.app.rootElement.setAttribute('route', 'default');
-			Sew.router.loading = false;
-			
-			//if (localStorage.getItem('sw_last_route') !== null) {
-				//Sew.router.navigate(localStorage.getItem('sw_last_route'));
-				//	console.warn('SW_Warning: Load previous page after unload, [' + localStorage.getItem('sw_last_route') + ']');
-				//} else
 			if (location.hash !== '') {
-				Sew.router.navigate(location.hash.substring(1).replace('/', ''));
+				sew.router.navigate(location.hash.substring(1).replace('/', ''));
 			} else {
-				Sew.router.navigate(Object.keys(app.pages)[0]);
+				sew.router.navigate(Object.keys(app.pages)[0]);
 			}
-			
-			Sew.router.initRefs();
 		},
 
-
-		initRefs: () => {
-			document.querySelectorAll('[ref]').forEach(element => {
-				window.elementRefs = {};
-				window.elementRefs[element.getAttribute('ref')] = element;
-				console.log(elementRefs);
-			});
-		},
 		/**
 		 * Navigate to a page.
 		 * @param {String} page The page name.
 		 */
 		navigate: async (page) => {
-			let pageContent;
-			await Sew.app.app.pages[page].then(c => {
-				let component = new c();
-
-				location.hash = '#/' + page;
-
-				if (component.view !== undefined && component.viewUrl === undefined) {
-					Sew.app.rootElement.innerHTML = component.view;
-				} else if (component.view === undefined && component.viewUrl !== undefined) {
-					Sew.router.loadPage(Sew.router.rootPath + component.viewUrl + '.sw.html')
-						.then((data) => {
-							Sew.app.rootElement.innerHTML = data;
-						});
-				}
+			if (sew.router.pages[page] === undefined | null) {
+				sew.app.error('Unknown Error', 'router');
 				
-				document.title = component.title;
-				
-				Sew.app.rootElement.setAttribute('route', page);
-				
-				component.init();
-				Sew.router.initRefs();
-
-				//localStorage.setItem('sw_last_route', _page);
-			});
+				const pauseBlank = sew.elements.create('sew-overlay', document.body,
+					'<sew-container alignment=center><h1>Unknown Error!</h1></sew-container>', false);
+				pauseBlank.classList.add('sew-overlay');
+			} else {
+				await sew.router.pages[page].then((componentClass) => {
+					let component = new componentClass();
+	
+					location.hash = '#/' + page;
+	
+					if (component.view !== undefined && component.viewUrl === undefined) {
+						sew.app.rootElement.innerHTML = component.view;
+					} else if (component.view === undefined && component.viewUrl !== undefined) {
+						sew.router.loadPage(sew.router.rootPath + 'src/' + component.viewUrl + '.sw.html')
+							.then((data) => {
+								sew.app.rootElement.innerHTML = data;
+							});
+					} else {
+						sew.app.error('Could not find a view attached to ' + page, 'router');
+					}
+					
+					document.title = component.title;
+					
+					sew.app.rootElement.setAttribute('route', page);
+					
+					component.init();
+				}).catch((error) => {
+					if (error) {
+						sew.app.error(error, 'router');
+					}
+				});
+			}
 		},
 
 		/**
@@ -268,22 +261,6 @@ const Sew = {
 			const html = await res.text();
 			return html;
 		},
-
-		/**
-		 * Set the base url or root path to which the router can refer when navigating.
-		 * @param {String} root The path.
-		 */
-		setRoot: (root) => {
-			Sew.router.rootPath = root;
-		},
-
-		/**
-		 * Set the source path.
-		 * @param {String} source The source.
-		 */
-		setSource: (sourcePath) => {
-			Sew.router.source = sourcePath;
-		}
 	},
 
 	/**
@@ -294,53 +271,43 @@ const Sew = {
 		/**
 		 * Initialize the ***Sew*** app's DOM view.
 		 * 
-		 * @param  {class} app The app class.
+		 * @param  {{pages: {}, appPreferences?: {}}} app The app object.
 		 */
 		init: (app) => {
 
-			Sew.app.app = app;
+			sew.router.pages = app.pages;
 
-			Sew.router.start(app).then(() => {
-				//app.start()
-			
+			sew.router.start(app).then(() => {
 				console.log('Loading...');
 				console.log('Welcome to Sew 0.0.4');
 	
-				Sew.app.log('Loading components...');
-				Sew.elements.UI.init();
-			
-				//location.pathname = location.hash;
+				sew.app.log('Loading components...');
+				Sui.init();
 
-				Sew.app.setTitle(app.title);
+				document.title = app.title;
 
 				if (app.appPreferences !== undefined && app.appPreferences.icon !== undefined) {
-					const faviconRef = Sew.elements.create('link', document.head, null, false);
+					const faviconRef = sew.elements.create('link', document.head, null, false);
 					faviconRef.setAttribute('href', app.appPreferences.icon);
 					faviconRef.setAttribute('rel', 'icon');
 				}
 
-				Sew.app.rootElement.setAttribute('lang', 'en');
-				Sew.app.rootElement.setAttribute('dir', 'ltr');
-				Sew.app.rootElement.classList.add('sew-theme-' + Sew.app.rootElement.getAttribute('theme'));
-				Sew.app.rootElement.setAttribute('sw-extended-component-id', '_sew-appRoot');
+				document.body.setAttribute('lang', 'en');
+				document.body.setAttribute('dir', 'ltr');
+				sew.app.rootElement.classList.add('sew-theme-' + sew.app.rootElement.getAttribute('theme'));
 
-				Sew.addStyleRefs('internal/framework/Sew.css');
+				sew.addStyleRefs('internal/framework/Sew.css');
 
-				if (Sew.app.rootElement.getAttribute('theme') === 'dark') {
-					const meta = Sew.elements.create('meta', document.head, null, false);
+				if (sew.app.rootElement.getAttribute('theme') === 'dark') {
+					const meta = sew.elements.create('meta', document.head, null, false);
 					meta.setAttribute('name', 'color-scheme');
 					meta.setAttribute('content', 'dark');
 				}
 
 				window.onhashchange = () => {
-					Sew.router.navigate(location.hash.substring(1).replace('/', ''));
+					sew.router.navigate(location.hash.substring(1).replace('/', ''));
 				}
-
 			});
-		},
-
-		setTitle(title) {
-			document.title = title;
 		},
 
 		/**
@@ -357,46 +324,46 @@ const Sew = {
 			console.log('%c[app] ' + msg, colorStyleText);
 		},
 
+		errorScopes: { app: '[app]', router: '[ROUTER]', elements: '[ELEMENTS]', unknown: '[UNKNOWN]' },
+
 		/**
 		 * Throw an error.
-		 * @param  {String} msg 
+		 * @param  {String} msg Error message.
+		 * @param  {String} scope Scope of the error (possible values: `app`, `router`, `elements`,
+		 * `unknown`)
 		 */
-		throwError: (msg) => {
-			throw new Error('Internal app Error -> ' + msg);
+		error: (msg, scope) => {
+			console.error(new Error('Internal app Error -> ' + sew.app.errorScopes[scope] + ' ' + msg));
 		},
 
 		/**
 		 * Get the currently routed-to page displayed in the `rootElement`.
 		 */
 		getActivePage: () => {
-			return Sew.app.rootElement.getAttribute('route');
+			return sew.app.rootElement.getAttribute('route');
 		},
-
-		/**
-		 * @type {{pages:{}}}
-		 */
-		app: null,
 
 	},
 
 	elements: {
 	
-		UI: {
+		ui: {
 			/**
 			 * Define all the custom Sew UI elements.
 			 */
 			init: () => {
-				customElements.define('sew-button', Sew.elements.UI.Button);
-				customElements.define('sew-text', Sew.elements.UI.Text);
-				customElements.define('sew-container', Sew.elements.UI.Container);
-				customElements.define('sew-navbar', Sew.elements.UI.Navbar);
-				customElements.define('sew-link', Sew.elements.UI.Link);
-				customElements.define('sew-card', Sew.elements.UI.Card);
-				customElements.define('sew-modal', Sew.elements.UI.Modal);
-				customElements.define('sew-page', Sew.elements.UI.Page);
-				customElements.define('sew-span', Sew.elements.UI.Span);
-				customElements.define('sew-img', Sew.elements.UI.Img);
-				customElements.define('sew-input', Sew.elements.UI.Input);
+				customElements.define('sew-button', Sui.Button);
+				customElements.define('sew-text', Sui.Text);
+				customElements.define('sew-container', Sui.Container);
+				customElements.define('sew-navbar', Sui.Navbar);
+				customElements.define('sew-link', Sui.Link);
+				customElements.define('sew-card', Sui.Card);
+				customElements.define('sew-modal', Sui.Modal);
+				customElements.define('sew-page', Sui.Page);
+				customElements.define('sew-span', Sui.Span);
+				customElements.define('sew-img', Sui.Img);
+				customElements.define('sew-input', Sui.Input);
+				customElements.define('sew-navtabs', Sui.Navtabs);
 			},
 
 
@@ -430,7 +397,7 @@ const Sew = {
 			},
 
 			/**
-			 * Define a button with color, outline and some more attributes.
+			 * Define a button with color, outline and a route inside the app to load.
 			 */
 			Button: class extends HTMLElement {
 				constructor() {
@@ -438,16 +405,9 @@ const Sew = {
 
 					this.classList.add('sew-button');
 					this.classList.add('sew-mat-item');
-					if (this.hasAttribute('color'))
-						this.classList.add('sew-button-colored');
+
 					this.classList.add('sew-color-' + this.getAttribute('color'));
 					this.removeAttribute('color');
-					this.setAttribute('sw-extended-component-id', '_sewButton');
-
-					if (this.hasAttribute('clicked')) {
-						this.setAttribute('onclick', this.getAttribute('clicked'));
-						this.removeAttribute('clicked');
-					}
 
 					if (this.hasAttribute('outline') && !this.hasAttribute('color')) {
 						this.classList.add('sew-outline-color-' + this.getAttribute('outline'));
@@ -458,17 +418,25 @@ const Sew = {
 							this.classList.remove('sew-button-hovered');
 						}
 					};
-					this.onclick = () => {
+					this.onclick = (event) => {
 						if (this.hasAttribute('route')) {
-							Sew.router.navigate(this.getAttribute('route'));
+							sew.router.navigate(this.getAttribute('route'));
 						}
-						if (this.hasAttribute('exec')) {
+						if (this.hasAttribute('*exec')) {
 							const execute = new Function(`
-							Sew.app.app.pages.${Sew.app.getActivePage()}.then(component => {
-								new component().${this.getAttribute('exec')}
+							sew.router.pages.${sew.app.getActivePage()}.then(component => {
+								new component().${this.getAttribute('*exec')};
 							});
 							`);
 							execute();
+						}
+						if (this.hasAttribute('*download')) {
+							const a = sew.elements.create('a', document.body,
+								null, false);
+							a.href = this.getAttribute('*download');
+							a.download = this.getAttribute('*download').split('/').pop();
+							a.click();
+							a.remove();
 						}
 					}
 				}
@@ -483,16 +451,6 @@ const Sew = {
 
 					this.classList.add('sew-link');
 					this.classList.add('sew-mat-item');
-
-					this.onclick = () => {
-						if (this.hasAttribute('route')) {
-							Sew.router.navigate(this.getAttribute('route'));
-						}
-						if (this.hasAttribute('sw-address')) {
-							window.open(this.getAttribute('sw-address'), this.getAttribute('target'));
-						}
-					};
-
 					
 					if (this.hasAttribute('color')) {
 						this.style.color = this.getAttribute('color');
@@ -500,21 +458,15 @@ const Sew = {
 					
 					if (this.hasAttribute('navelement')) {
 						this.classList.add('sew-nav-element');
-						this.onclick = () => {
-							if (this.hasAttribute('route')) {
-								Sew.router.navigate(this.getAttribute('route'));
-							}
-							if (this.hasAttribute('sw-address')) {
-								window.open(this.getAttribute('sw-address'), this.getAttribute('target'));
-							}
-							if (/(android)/i.test(navigator.userAgent)) {
-								document.getElementById('nav-overlay').remove();
-								document.getelementsByClassName('sew-nav-links-float')[0].classList.remove('sew-nav-links-float');
-							}
+					}
+					this.onclick = () => {
+						if (this.hasAttribute('route')) {
+							sew.router.navigate(this.getAttribute('route'));
+						}
+						if (this.hasAttribute('href')) {
+							window.open(this.getAttribute('href'), this.getAttribute('target'));
 						}
 					}
-
-					this.setAttribute('sw-extended-component-id', '_sewLink');
 				}
 			},
 
@@ -543,8 +495,6 @@ const Sew = {
 					if (this.hasAttribute('jumbotron-wrapper')) {
 						this.classList.add('sew-jumbotron-wrapper');
 					}
-
-					this.setAttribute('sw-extended-component-id', '_sewContainerDiv');
 				}
 			},
 
@@ -561,14 +511,10 @@ const Sew = {
 
 					if (this.hasAttribute('fixed')) {
 						this.classList.add('sew-nav-fixed');
-						Sew.app.rootElement.classList.add('sew-body-fixednav-pads');
+						sew.app.rootElement.classList.add('sew-body-fixednav-pads');
 					}
 
-					this.setAttribute('sw-extended-component-id', '_sewNavbar');
-
-
-					// if (/(android)/i.test(navigator.userAgent)) {
-					const e = Sew.elements.create('sew-button-unused', this.querySelector('[navBody]'), '', false);
+					const e = sew.elements.create('sew-button-unused', this.querySelector('[navBody]'), '', false);
 					e.classList.add('sew-button');
 					e.classList.add('sew-color-danger');
 					e.classList.add('sew-mat-item');
@@ -576,7 +522,7 @@ const Sew = {
 
 					e.onclick = () => {
 						this.querySelector('ul[navList]').toggleAttribute('navVisible');
-					}
+					};
 
 					this.classList.add('sew-nav-mobile');
 				}
@@ -595,8 +541,6 @@ const Sew = {
 					this.querySelector('sew-card-body').classList.add('sew-card-body');
 
 					this.querySelector('sew-card-title').classList.add('sew-card-title');
-
-					this.setAttribute('sw-extended-component-id', '_sewCard');
 				}
 			},
 
@@ -614,12 +558,12 @@ const Sew = {
 					const wrapper = this.querySelector('sew-modal-close');
 					wrapper.classList.add('sew-modal-close-wrapper');
 
-					Sew.elements.create('sew-modal-close-button', wrapper, '&nbsp;&Cross;&nbsp;', false)
+					sew.elements.create('sew-modal-close-button', wrapper, '&nbsp;&Cross;&nbsp;', false)
 						.classList.add('sew-modal-close');
 
 					if (this.querySelector('[modal-close]') !== null) {
 						this.querySelector('[modal-close]').addEventListener('click', () => {
-							Sew.elements.disable(Sew.elements.get(`${this.getAttribute('name')}`), true);
+							sew.elements.disable(sew.elements.get(`${this.getAttribute('name')}`), true);
 						});
 					}
 
@@ -629,10 +573,8 @@ const Sew = {
 					this.querySelector('sew-modal-buttons').classList.add('sew-modal-buttons');
 
 					this.querySelector('sew-modal-close-button').addEventListener('click', () => {
-						Sew.elements.disable(Sew.elements.get(`${this.name}`), true);
+						sew.elements.disable(sew.elements.get(`${this.name}`), true);
 					});
-
-					this.setAttribute('sw-extended-component-id', '_sewModal');
 				}
 			},
 
@@ -644,14 +586,12 @@ const Sew = {
 					super();
 
 					this.loadInner();
-
-					this.setAttribute('sw-extended-component-id', '_sewEmbedPage');
 				}
 				async loadInner() {
-					await Sew.app.app.pages[this.getAttribute('route')].then(c => {
+					await sew.router.pages[this.getAttribute('route')].then(c => {
 						let component = new c();
 
-						Sew.router.loadPage(Sew.router.rootPath + component.viewUrl + '.sw.html')
+						sew.router.loadPage(sew.router.rootPath + 'src/' + component.viewUrl + '.sw.html')
 							.then((data) => {
 								this.innerHTML = data;
 							});
@@ -660,16 +600,13 @@ const Sew = {
 			},
 
 			/**
-			 * A plain element. If you just want a simple element on which you can use
-			 * sw- triggers, use this one!
+			 * A plain element. If you just want a simple element on which you can toggle
+			 * visibility, use this one!
 			 */
 			Span: class extends HTMLElement {
 				constructor() {
 					super();
 
-					let old = this.getAttribute('sw-visible');
-
-					this.setAttribute('sw-extended-component-id', '_Plain');
 					const _this = this;
 
 					if (this.hasAttribute('sw-visible')) {
@@ -728,6 +665,11 @@ const Sew = {
 				}
 			},
 
+			/**
+			 * An image. The difference between this and a normal image? This also provides a 
+			 * loading spinner until the complete image is loaded, also with no-effort padding
+			 * and size.
+			 */
 			Img: class extends HTMLElement {
 				constructor() {
 					super();
@@ -736,11 +678,11 @@ const Sew = {
 
 					this.classList.add('sew-img');
 					
-					const spinner = Sew.elements.create('span', this, null, false);
+					const spinner = sew.elements.create('span', this, null, false);
 					spinner.classList.add('sew-spinner');
 					
 					if (this.hasAttribute('src')) {
-						childImg = Sew.elements.create('img', this, null, false);
+						childImg = sew.elements.create('img', this, null, false);
 						childImg.setAttribute('src', this.getAttribute('src'));
 						childImg.setAttribute('alt', this.getAttribute('alt'));
 						
@@ -772,17 +714,17 @@ const Sew = {
 						childImg.classList.add(this.getAttribute('sw-class'));
 						this.removeAttribute('sw-class');
 					}
-
-					childImg.setAttribute('sw-extended-component-id',
-						'_sewGenerated');
-					this.setAttribute('sw-extended-component-id', '_sewImage');
 				}
 			},
+
+			/**
+			 * An input element with responsive and reactive change detection.
+			 */
 			Input: class extends HTMLElement {
 				constructor() {
 					super();
 
-					const childInput = Sew.elements.create('input', this, null, false);
+					const childInput = sew.elements.create('input', this, null, false);
 					if (this.hasAttribute('hint')) {
 						childInput.setAttribute('placeholder', this.getAttribute('hint'));
 						this.removeAttribute('hint');
@@ -791,18 +733,74 @@ const Sew = {
 						childInput.setAttribute('name', this.getAttribute('name'));
 					}
 					if (this.hasAttribute('type')) {
+						if (this.getAttribute('type') === 'file') {
+							childInput.classList.add('sew-button', 'sew-color-primary');
+							const e=sew.elements.create('sew-button-unused', this, 'Choose file', false);
+							e.classList.add('sew-button', 'sew-mat-item', 'sew-color-primary');
+							e.onclick = () => {
+								childInput.click();	
+							}
+						}
 						childInput.setAttribute('type', this.getAttribute('type'));
 					}
 
 					if (this.hasAttribute('*change')) {
-						Sew.app.app.pages[Sew.app.getActivePage()].then(c => {
+						sew.router.pages[sew.app.getActivePage()].then(c => {
 							let component = new c();
-							this.addEventListener('input', () => {
-								const fn = new Function(`let component = ${c.toString()};new component().${this.getAttribute('*change')}();`);
-								fn();
-							})
-						})
+							if (this.getAttribute('type') === 'file') {
+								this.addEventListener('change', (event) => {
+									const fr = new FileReader();
+									fr.onload = (event) => {
+										const fn = new Function(`let component = ${c.toString()};new component().${this.getAttribute('*change')}(\`${encodeURI(event.target.result)}\`);`);
+										fn();
+									};
+									fr.readAsText(event.target.files[0]);
+								});
+							} else {
+								this.addEventListener('input', () => {
+									const fn = new Function(`let component = ${c.toString()};new component().${this.getAttribute('*change')}();`);
+									fn();
+								});
+							}
+						});
 					}
+				}
+			},
+
+			/**
+			 * Similar to Navbar, but simpler and tabs aren't different pages but only elements
+			 * which have different content.
+			 */
+			Navtabs: class extends HTMLElement {
+				constructor() {
+					super();
+
+					this.classList.add('sew-navtabs');
+					this.classList.add('sew-navtabs-tabs');
+
+					this.querySelectorAll('sew-navtabs-item').forEach((tab) => {
+						tab.classList.add('sew-navtabs-item');
+						tab.classList.add('sew-mat-item');
+
+						tab.addEventListener('click', () => {
+							sew.elements.changeActiveTab(this, tab.getAttribute('name'));
+							if (this.hasAttribute('*change')) {
+								const fn = new Function(`
+									sew.router.pages.${sew.app.getActivePage()}.then((component) => {
+										const activeTab = Slm.getActiveTab(Slm.get('${this.getAttribute('name')}'));
+										new component().${this.getAttribute('*change')}(activeTab.getAttribute('name'));
+									});
+								`);
+								fn();
+							}
+						});
+					});
+
+					document.querySelectorAll('sew-navtabs-content').forEach(tabContents => { 
+						tabContents.classList.add('sew-navtabs-content');
+					});
+
+					sew.elements.changeActiveTab(this, this.children[0].getAttribute('name'));
 				}
 			}
 		},
@@ -811,10 +809,12 @@ const Sew = {
 		/**
 		 * Create/append a new element in the DOM Body.
 		 * 
-		 * @param  {String} name The tag name of the element
+		 * @param  {String} name The tag name of the element.
 		 * @param  {HTMLElement} parent The parent element to this element.
 		 * @param  {String} contents The HTML contents of the given element.
 		 * @param  {Boolean} emptyParent If the parent's text should be emptied while appending
+		 * 
+		 * @returns {HTMLElement}
 		 */
 		create: (name, parent, contents, emptyParent) => {
 			const e = document.createElement(name);
@@ -903,9 +903,70 @@ const Sew = {
 		 */
 		get: (name) => {
 			return document.getElementsByName(name)[0];
-		}
+		},
+
+		/**
+		 * Activate a particular tab in a Navtabs group.
+		 * @param {HTMLElement} tabs The navtabs group.
+		 * @param {String} activate The name of the tab to activate.
+		 */
+		changeActiveTab: (tabs, activate) => {
+			tabs.querySelectorAll('sew-navtabs-item').forEach((tab) => {
+				if (tab.hasAttribute('active')) {
+					tab.removeAttribute('active');
+				}
+			});
+			tabs.querySelector(`[name=${activate}]`).setAttribute('active', '');
+
+			const contentSelector = 'content_' + activate;
+			document.querySelectorAll('sew-navtabs-content').forEach((tabContents) => {
+				tabContents.classList.add('sew-navtabs-content');
+
+				tabContents.classList.remove('sew-visible');
+				tabContents.classList.add('sew-nodisplay');
+				if (tabContents.getAttribute('group') === tabs.getAttribute('name')
+				 && tabContents.getAttribute('name') === contentSelector) {
+					 tabContents.classList.remove('sew-nodisplay');
+					 tabContents.classList.add('sew-visible');
+				}
+			});
+		},
+
+		/**
+		 * Get the currently open tab in a navtabs group.
+		 * @param {HTMLElement} tabs The navtabs group.
+		 * @returns {HTMLElement}
+		 */
+		getActiveTab: (tabs) => {
+			return tabs.querySelector('[active]');
+		},
 	},
-}
+
+	plugins: {
+		User: {
+
+			login: () => {
+				window.globalSwContext = {};
+				window.globalSwContext.userTok = Spg.User.token().get(35);
+				console.log('Signing User...', window.globalSwContext.userTok);
+			},
+			register: () => {},
+			update: () => {},
+			token: () => {
+				return {
+					get(randLength=5){var str='';var randChar=(function(){var n=Math.floor(Math.random()*62);
+						if(n<10)return(n);if(n<36)return(String.fromCharCode(n+55));return(String.fromCharCode(n+61));});while
+						(str.length < randLength)str+=randChar();return(str);}
+				} 
+					
+			},
+		},
+	},
+};
+
+const Sui = sew.elements.ui;
+const Slm = sew.elements;
+const Spg = sew.plugins;
 
 /**
  * Thanks for peeking into the wonderous code of Sew :)
