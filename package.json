@@ -1,6 +1,6 @@
 {
   "name": "@anshulkhope/sew-cli",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "The CLI Tool for SeaWave Framework (Se for Sea and w for wave).",
   "main": "index.js",
   "scripts": {
