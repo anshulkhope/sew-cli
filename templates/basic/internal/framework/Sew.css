@@ -9,6 +9,7 @@
 	
 	--sew-color-primary: #076aff;
 	--sew-color-secondary: #86cfb1;
+	--sew-color-tertiary: #f58223;
 	--sew-color-info: #05b7e4;
 	--sew-color-success: #16ad37;
 	--sew-color-danger: #da4545;
@@ -82,19 +83,10 @@ sew-app {
 	background-color: #f1f1f1;
 }
 
-select {
-	
-}
-
 ::-webkit-scrollbar-thumb {
 	transition-duration: 3s;
 	background-color: var(--sew-scrollbar-color);
 	border-radius: 12px;
-}
-
-input[type=file] {
-	display: none;
-	opacity: 0;
 }
 
 .sew-mat-item {
@@ -192,6 +184,10 @@ input[type=file] {
 	background-color: var(--sew-color-secondary);
 }
 
+.sew-color-tertiary {
+	background-color: var(--sew-color-tertiary);
+}
+
 .sew-color-info {
 	background-color: var(--sew-color-info);
 }
@@ -213,10 +209,20 @@ input[type=file] {
 	background-color: var(--sew-color-dark);
 }
 
+.sew-color-light {
+	background-color: var(--sew-color-light);
+}
+
 .sew-outline-color-primary {
 	border: 2px solid var(--sew-color-primary);
 	background-color: #ffffff00;
 	color: var(--sew-color-primary);
+}
+
+.sew-outline-color-secondary {
+	border: 2px solid var(--sew-color-secondary);
+	background-color: #ffffff00;
+	color: var(--sew-color-secondary);
 }
 
 .sew-outline-color-warning {
@@ -240,6 +246,10 @@ input[type=file] {
 
 .sew-text-secondary {
 	color: var(--sew-color-secondary);
+}
+
+.sew-text-tertiary {
+	color: var(--sew-color-tertiary);
 }
 
 .sew-text-info {
@@ -334,8 +344,10 @@ input[type=file] {
 }
 
 .sew-link {
+	display: inline-block;
 	text-decoration: underline;
 	color: var(--sew-color-primary);
+	cursor: pointer;
 }
 .sew-link:active {
 	transition-duration: 90ms;
@@ -643,13 +655,13 @@ input[type=file] {
 
 .sew-modal-title {
 	display: block;
-	font-size: 1.9rem;
+	font-size: 1.7rem;
 }
 
 .sew-modal-shown {
 	transition-duration: 3s;
 	display: block !important;
-	animation: fadein 0.6s;
+	animation: fadein 0.4s;
 }
 
 .sew-modal-hidden {
@@ -657,7 +669,7 @@ input[type=file] {
 }
 
 .sew-modal-start-hide {
-	animation: fadeout 0.6s;
+	animation: fadeout 0.4s;
 }
 
 .sew-modal-close-wrapper {
@@ -758,6 +770,7 @@ input[type=file] {
 }
 
 .sew-card-body {
+	display: block;
 	flex: 1 1 auto;
 	padding: 1rem 1rem;
 	color: #000;
@@ -765,6 +778,7 @@ input[type=file] {
 }
 
 .sew-card-head {
+	display: block;
 	padding: 0.5rem 1rem;
 	margin-bottom: 0;
 	background-color: var(--sew-card-background);
@@ -806,18 +820,30 @@ form {
 	padding: 20px;
 }
 
-input, select {
+.sew-input, .sew-input-select {
+	display: block;
+	font-family: var(--sew-font);
+	font-size: 14.5px;
 	width: auto;
 	padding: 12px 20px;
 	margin: 8px 0;
-	display: inline-block;
 	border: 1px solid #ccc;
 	border-radius: 4px;
 	box-sizing: border-box;
 	outline: none;
+	max-height: 43px;
 }
 
-input[type=text], input[type=password], input[type=email] {
+.sew-input-text, .sew-input-password, .sew-input-email {
+	width: auto;
+}
+
+.sew-input-file {
+	display: none;
+	opacity: 0;
+}
+
+input.full-block {
 	width: 100%;
 }
 
@@ -851,4 +877,27 @@ input[type=text], input[type=password], input[type=email] {
     pointer-events: none;
 	filter: grayscale(100%);
 	user-select: none;
+}
+
+code {
+    display: block;
+    padding: 1.6rem;
+    margin-top: .5rem;
+    margin-bottom: .5rem;
+    background-color: var(--sew-color-dark);
+    border-radius: 12px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 15px;
+    color: white;
+    text-align: start;
+    overflow-x: hidden;
+}
+
+code > trusr {
+    color: #999;
+    user-select: none;
+}
+
+code > cmd {
+    color: var(--sew-color-warning);
 }

@@ -1,12 +1,14 @@
 /**
- * Sew v0.0.4
- * Copyright (c) 2021 - Anshul Khope, Sew Company
+ * Sew v0.0.3
+ * Copyright (c) 2021 - Anshul Khope
  * 
- * Sew is JavaScript library for easier handling of UI Components.
- * It is completely based on the idea of Components. Everything you see is a component;
+ * (*Note*: this library is specifically built for AKW and not for commercial use)
+ * 
+ * Sew is JavaScript library for easier handling of UI Elements & Routing.
+ * It is completely based on the idea of Elements. Everything you see is a element;
  * even the app itself.
  * 
- * Components can be decorated differently to get results such as buttons,
+ * Elements can be decorated differently to get results such as buttons,
  * checkboxes, text inputs, links, cards, paragraphs, navbar, etc. Sew comes by default
  * with a CSS that you can use right away (no link-imports needed, the library
  * imports it by default!).
@@ -24,22 +26,21 @@
  * other functions.
  */
 
-const sew = {
+const Sew = {
 
 	/**
-	 * @name addStyleRefs
-	 * @description Add a reference to a CSS stylesheet.
+	 * Add a reference to a CSS stylesheet.
 	 * 
 	 * @param  {String} href The URL/path to the stylesheet.
 	 */
 	addStyleRefs: (href) => {
-		const e = sew.elements.create('link', document.head, null, false);
+		const e = Sew.elements.create('link', document.head, null, false);
 		e.setAttribute('href', href);
 		e.setAttribute('rel', 'stylesheet');
 
 		e.onload = () => {
 			console.log('Loaded Styles! [' + href + ']');
-		}
+		};
 	},
 
 	/**
@@ -51,16 +52,16 @@ const sew = {
 	 * @param  {String} message Message shown in the body of the toast.
 	 */
 	showQuickToast: (title, message) => {
-		const e = sew.elements.create('sew-toast', document.body, '', false);
+		const e = Sew.elements.create('sew-toast', document.body, '', false);
 		e.classList.add('sew-toast');
 		e.classList.add('show');
 
 
-		const head = sew.elements.create('sew-toast-head', e, '', false);
+		const head = Sew.elements.create('sew-toast-head', e, '', false);
 		head.classList.add('sew-toast-head');
-		sew.elements.create('sew-toast-title', head, title, false)
+		Sew.elements.create('sew-toast-title', head, title, false)
 			.classList.add('sew-toast-title');
-		const body = sew.elements.create('sew-toast-body', e, message, false);
+		const body = Sew.elements.create('sew-toast-body', e, message, false);
 		body.classList.add('sew-toast-body');
 
 
@@ -80,7 +81,7 @@ const sew = {
 		if (document.querySelector('sew-info'))
 			document.querySelector('sew-info').remove();
 
-		const e = sew.elements.create('sew-info', document.body, infomsg, false);
+		const e = Sew.elements.create('sew-info', document.body, infomsg, false);
 		e.classList.add('sew-info');
 		e.classList.add('show');
 		e.classList.add('align-bottom');
@@ -125,45 +126,45 @@ const sew = {
 		 */
 		disable: (control, msgOnCtrlBreak) => {
 
-			if (control === 'inspect' && sew.controls.shouldDisablecontrols) {
+			if (control === 'inspect' && Sew.controls.shouldDisablecontrols) {
 				document.onkeydown = (e) => {
 					if (e.keyCode == 123) {
-						sew.showQuickToast('Error', 'Inspect Element is disabled.');
+						Sew.showQuickToast('Error', 'Inspect Element is disabled.');
 						return false;
 					}
 					if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) {
-						sew.showQuickToast('Error', 'Inspect Element is disabled.');
+						Sew.showQuickToast('Error', 'Inspect Element is disabled.');
 						return false;
 					}
 					if (e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) {
-						sew.showQuickToast('Error', 'Inspect Element is disabled.');
+						Sew.showQuickToast('Error', 'Inspect Element is disabled.');
 						return false;
 					}
 					if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) {
-						sew.showQuickToast('Error', 'Inspect Element is disabled.');
+						Sew.showQuickToast('Error', 'Inspect Element is disabled.');
 						return false;
 					}
 				}
 			}
-			else if (control === 'view-source' && sew.controls.shouldDisablecontrols) {
+			else if (control === 'view-source' && Sew.controls.shouldDisablecontrols) {
 				document.onkeydown = (e) => {
 					if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) {
-						sew.showQuickToast('Error', 'View Source is disabled.');
+						Sew.showQuickToast('Error', 'View Source is disabled.');
 						return false;
 					}
 				}
 			}
-			if (control === 'contextmenu' && sew.controls.shouldDisablecontrols) {
+			if (control === 'contextmenu' && Sew.controls.shouldDisablecontrols) {
 				document.oncontextmenu = function (e) {
-					sew.showQuickToast('Error', 'Right Click is disabled.');
+					Sew.showQuickToast('Error', 'Right Click is disabled.');
 					return false;
 				}
 			}
-			if (control === 'select' && sew.controls.shouldDisablecontrols) {
+			if (control === 'select' && Sew.controls.shouldDisablecontrols) {
 				document.onselectstart = (ev) => {
 					ev.preventDefault();
 				}
-				sew.app.rootElement.classList.add('sew-cursor-default');
+				Sew.app.rootElement.classList.add('sew-cursor-default');
 				return false;
 			}
 		}
@@ -194,66 +195,66 @@ const sew = {
 		 */
 		start: async (app) => {
 
-			sew.router.rootPath = document.querySelector('base').href;
+			Sew.router.rootPath = document.querySelector('base').href;
 			 
 			Object.values(app.pages).forEach(page => {
-				sew.router.pages[page.name] = page.view;
+				Sew.router.pages[page.name] = page.view || page.viewUrl;
 			});
 			
-			sew.app.rootElement.setAttribute('route', 'default');
-			sew.router.loading = false;
+			Sew.app.rootElement.setAttribute('route', 'default');
+			Sew.router.loading = false;
 
 			if (location.hash !== '') {
-				sew.router.navigate(location.hash.substring(1).replace('/', ''));
+				Sew.router.navigate(location.hash.substring(1).replace('/', ''));
 			} else {
-				sew.router.navigate(Object.keys(app.pages)[0]);
+				Sew.router.navigate(Object.keys(app.pages)[0]);
 			}
 		},
 
 		/**
 		 * Navigate to a page.
-		 * @param {String} page The page name.
+		 * @param {String} _page The page name.
 		 */
 		navigate: async (page) => {
-			if (sew.router.pages[page] === undefined | null) {
-				sew.app.error('Unknown Error', 'router');
+			if (Sew.router.pages[page] === undefined | null) {
+				Sew.app.error('Unknown Error', 'router');
 				
-				const pauseBlank = sew.elements.create('sew-overlay', document.body,
-					'<sew-container alignment=center><h1>Unknown Error!</h1></sew-container>', false);
+				const pauseBlank = Sew.elements.create('sew-overlay', document.body,
+					'<sew-container alignment=center><h1>Router: Unknown Error!</h1></sew-container>', false);
 				pauseBlank.classList.add('sew-overlay');
 			} else {
-				await sew.router.pages[page].then((componentClass) => {
+				await Sew.router.pages[page].then((componentClass) => {
 					let component = new componentClass();
 	
 					location.hash = '#/' + page;
 	
 					if (component.view !== undefined && component.viewUrl === undefined) {
-						sew.app.rootElement.innerHTML = component.view;
+						Sew.app.rootElement.innerHTML = component.view;
 					} else if (component.view === undefined && component.viewUrl !== undefined) {
-						sew.router.loadPage(sew.router.rootPath + 'src/' + component.viewUrl + '.sw.html')
+						Sew.router.loadPage(Sew.router.rootPath + 'src/' + component.viewUrl + '.sw.html')
 							.then((data) => {
-								sew.app.rootElement.innerHTML = data;
+								Sew.app.rootElement.innerHTML = data;
 							});
 					} else {
-						sew.app.error('Could not find a view attached to ' + page, 'router');
+						Sew.app.error('Could not find a view attached to ' + page, 'router');
 					}
 					
 					document.title = component.title;
 					
-					sew.app.rootElement.setAttribute('route', page);
+					Sew.app.rootElement.setAttribute('route', page);
 					
 					component.init();
 				}).catch((error) => {
 					if (error) {
-						sew.app.error(error, 'router');
+						Sew.app.error(error, 'router');
 					}
 				});
 			}
 		},
 
 		/**
-		 * Load a page to the app.RootElement. Needs the absolute url to the HTML file.
-		 * @param {String} page The page to load.
+		 * Get a page's html. Needs the absolute url to the HTML file.
+		 * @param {String} page The page url to load.
 		 * @returns String
 		 */
 		loadPage: async (page) => {
@@ -275,38 +276,40 @@ const sew = {
 		 */
 		init: (app) => {
 
-			sew.router.pages = app.pages;
+			window.app = app;
 
-			sew.router.start(app).then(() => {
+			Sew.router.pages = app.pages;
+
+			Sew.router.start(app).then(() => {
 				console.log('Loading...');
 				console.log('Welcome to Sew 0.0.4');
 	
-				sew.app.log('Loading components...');
-				Sui.init();
+				Sew.app.log('Loading components...');
+				Sew.elements.ui.init();
 
 				document.title = app.title;
 
 				if (app.appPreferences !== undefined && app.appPreferences.icon !== undefined) {
-					const faviconRef = sew.elements.create('link', document.head, null, false);
+					const faviconRef = Sew.elements.create('link', document.head, null, false);
 					faviconRef.setAttribute('href', app.appPreferences.icon);
 					faviconRef.setAttribute('rel', 'icon');
 				}
 
 				document.body.setAttribute('lang', 'en');
 				document.body.setAttribute('dir', 'ltr');
-				sew.app.rootElement.classList.add('sew-theme-' + sew.app.rootElement.getAttribute('theme'));
+				Sew.app.rootElement.classList.add('sew-theme-' + Sew.app.rootElement.getAttribute('theme'));
 
-				sew.addStyleRefs('internal/framework/Sew.css');
+				Sew.addStyleRefs('internal/framework/Sew.css');
 
-				if (sew.app.rootElement.getAttribute('theme') === 'dark') {
-					const meta = sew.elements.create('meta', document.head, null, false);
+				if (Sew.app.rootElement.getAttribute('theme') === 'dark') {
+					const meta = Sew.elements.create('meta', document.head, null, false);
 					meta.setAttribute('name', 'color-scheme');
 					meta.setAttribute('content', 'dark');
 				}
 
-				window.onhashchange = () => {
-					sew.router.navigate(location.hash.substring(1).replace('/', ''));
-				}
+				addEventListener('hashchange', () => {
+					Sew.router.navigate(location.hash.substring(1).replace('/', ''));
+				});
 			});
 		},
 
@@ -317,11 +320,20 @@ const sew = {
 
 		/**
 		 * Log a message to the console.
-		 * @param  {String} msg 
+		 * @param  {String} msg Log message.
+		 * @param  {String} type Type of the message. (possible values: `normal`, `code`)
 		 */
-		log: (msg) => {
-			let colorStyleText = 'color:green;font-size:.8rem;font-weight:600';
-			console.log('%c[app] ' + msg, colorStyleText);
+		log: (msg, type) => {
+			let colorStyleText = 'color:green;font-size:.8rem;font-weight:400';
+			switch(type) {
+				case 'normal':
+					console.log('%c[app] ' + msg, colorStyleText);
+					break;
+				case 'code':
+					colorStyleText = 'color:#60789e;font-size:.8rem;font-weight:300;font:italic monospace;';
+					console.log('%c' + msg, colorStyleText);
+					break;
+			}
 		},
 
 		errorScopes: { app: '[app]', router: '[ROUTER]', elements: '[ELEMENTS]', unknown: '[UNKNOWN]' },
@@ -333,14 +345,23 @@ const sew = {
 		 * `unknown`)
 		 */
 		error: (msg, scope) => {
-			console.error(new Error('Internal app Error -> ' + sew.app.errorScopes[scope] + ' ' + msg));
+			const colorStyleText = 'color:red;font-size:.8rem;font-weight:600';
+			const error = new Error('Internal app Error -> ' + Sew.app.errorScopes[scope] + ' ' + msg);
+
+			if (window.app.appPreferences.verbose === 'high')
+				console.error(`%c${error.stack}`, colorStyleText);
+			if (window.app.appPreferences.verbose === 'medium')
+				console.error(`%c${error.message}`, colorStyleText);
+			if (window.app.appPreferences.verbose === 'low')
+				console.error(`%c${error.name}`, colorStyleText);
+			console.table();
 		},
 
 		/**
 		 * Get the currently routed-to page displayed in the `rootElement`.
 		 */
 		getActivePage: () => {
-			return sew.app.rootElement.getAttribute('route');
+			return Sew.app.rootElement.getAttribute('route');
 		},
 
 	},
@@ -420,23 +441,30 @@ const sew = {
 					};
 					this.onclick = (event) => {
 						if (this.hasAttribute('route')) {
-							sew.router.navigate(this.getAttribute('route'));
+							Sew.router.navigate(this.getAttribute('route'));
 						}
 						if (this.hasAttribute('*exec')) {
 							const execute = new Function(`
-							sew.router.pages.${sew.app.getActivePage()}.then(component => {
+							Sew.router.pages.${Sew.app.getActivePage()}.then(component => {
 								new component().${this.getAttribute('*exec')};
 							});
 							`);
 							execute();
 						}
 						if (this.hasAttribute('*download')) {
-							const a = sew.elements.create('a', document.body,
+							const a = Sew.elements.create('a', document.body,
 								null, false);
 							a.href = this.getAttribute('*download');
 							a.download = this.getAttribute('*download').split('/').pop();
 							a.click();
 							a.remove();
+						}
+						if (this.hasAttribute('href')) {
+							if (!this.hasAttribute('target')) {
+								window.open(this.getAttribute('href'), '_self');
+							} else {
+								window.open(this.getAttribute('href'), this.getAttribute('target'));
+							}
 						}
 					}
 				}
@@ -450,7 +478,6 @@ const sew = {
 					super();
 
 					this.classList.add('sew-link');
-					this.classList.add('sew-mat-item');
 					
 					if (this.hasAttribute('color')) {
 						this.style.color = this.getAttribute('color');
@@ -461,7 +488,7 @@ const sew = {
 					}
 					this.onclick = () => {
 						if (this.hasAttribute('route')) {
-							sew.router.navigate(this.getAttribute('route'));
+							Sew.router.navigate(this.getAttribute('route'));
 						}
 						if (this.hasAttribute('href')) {
 							window.open(this.getAttribute('href'), this.getAttribute('target'));
@@ -511,10 +538,10 @@ const sew = {
 
 					if (this.hasAttribute('fixed')) {
 						this.classList.add('sew-nav-fixed');
-						sew.app.rootElement.classList.add('sew-body-fixednav-pads');
+						Sew.app.rootElement.classList.add('sew-body-fixednav-pads');
 					}
 
-					const e = sew.elements.create('sew-button-unused', this.querySelector('[navBody]'), '', false);
+					const e = Sew.elements.create('sew-button-unused', this.querySelector('[navBody]'), '', false);
 					e.classList.add('sew-button');
 					e.classList.add('sew-color-danger');
 					e.classList.add('sew-mat-item');
@@ -538,9 +565,9 @@ const sew = {
 					this.classList.add('sew-card');
 
 					this.querySelector('sew-card-head').classList.add('sew-card-head');
+					this.querySelector('sew-card-title').classList.add('sew-card-title');
 					this.querySelector('sew-card-body').classList.add('sew-card-body');
 
-					this.querySelector('sew-card-title').classList.add('sew-card-title');
 				}
 			},
 
@@ -558,12 +585,12 @@ const sew = {
 					const wrapper = this.querySelector('sew-modal-close');
 					wrapper.classList.add('sew-modal-close-wrapper');
 
-					sew.elements.create('sew-modal-close-button', wrapper, '&nbsp;&Cross;&nbsp;', false)
+					Sew.elements.create('sew-modal-close-button', wrapper, '&nbsp;&Cross;&nbsp;', false)
 						.classList.add('sew-modal-close');
 
 					if (this.querySelector('[modal-close]') !== null) {
 						this.querySelector('[modal-close]').addEventListener('click', () => {
-							sew.elements.disable(sew.elements.get(`${this.getAttribute('name')}`), true);
+							Sew.elements.disable(Sew.elements.get(`${this.getAttribute('name')}`), true);
 						});
 					}
 
@@ -573,7 +600,7 @@ const sew = {
 					this.querySelector('sew-modal-buttons').classList.add('sew-modal-buttons');
 
 					this.querySelector('sew-modal-close-button').addEventListener('click', () => {
-						sew.elements.disable(sew.elements.get(`${this.name}`), true);
+						Sew.elements.disable(Sew.elements.get(`${this.getAttribute('name')}`), true);
 					});
 				}
 			},
@@ -588,10 +615,10 @@ const sew = {
 					this.loadInner();
 				}
 				async loadInner() {
-					await sew.router.pages[this.getAttribute('route')].then(c => {
+					await Sew.router.pages[this.getAttribute('route')].then(c => {
 						let component = new c();
 
-						sew.router.loadPage(sew.router.rootPath + 'src/' + component.viewUrl + '.sw.html')
+						Sew.router.loadPage(Sew.router.rootPath + 'src/' + component.viewUrl + '.sw.html')
 							.then((data) => {
 								this.innerHTML = data;
 							});
@@ -621,8 +648,8 @@ const sew = {
 						var observer = new MutationObserver(function(mutations) {
 							mutations.forEach(function(mutation) {
 							if (mutation.type === 'attributes') {
-								const checkFunc = new Function('return(' + _this.getAttribute('sw-visible') + ');');
-								if (checkFunc() === true) {
+								const isVisible = new Function('return(' + _this.getAttribute('sw-visible') + ');');
+								if (isVisible()) {
 									_this.style.display = '';
 								} else {
 									_this.style.display = 'none';
@@ -638,9 +665,9 @@ const sew = {
 
 					if (this.hasAttribute('sw-if')) {
 
-						const checkFunc = new Function('return(' + this.getAttribute('sw-if') + ');');
+						const isVisible = new Function('return(' + this.getAttribute('sw-if') + ');');
 						
-						if (checkFunc() === true) {
+						if (isVisible() === true) {
 							this.style.display = '';
 						} else {
 							this.style.display = 'none';
@@ -678,11 +705,11 @@ const sew = {
 
 					this.classList.add('sew-img');
 					
-					const spinner = sew.elements.create('span', this, null, false);
+					const spinner = Sew.elements.create('span', this, null, false);
 					spinner.classList.add('sew-spinner');
 					
 					if (this.hasAttribute('src')) {
-						childImg = sew.elements.create('img', this, null, false);
+						childImg = Sew.elements.create('img', this, null, false);
 						childImg.setAttribute('src', this.getAttribute('src'));
 						childImg.setAttribute('alt', this.getAttribute('alt'));
 						
@@ -724,18 +751,20 @@ const sew = {
 				constructor() {
 					super();
 
-					const childInput = sew.elements.create('input', this, null, false);
+					const childInput = Sew.elements.create('input', this, null, false);
+					childInput.classList.add('sew-input', 'sew-input-' + this.getAttribute('type'));
 					if (this.hasAttribute('hint')) {
 						childInput.setAttribute('placeholder', this.getAttribute('hint'));
 						this.removeAttribute('hint');
 					}
 					if (this.hasAttribute('name')) {
 						childInput.setAttribute('name', this.getAttribute('name'));
+						this.removeAttribute('name');
 					}
 					if (this.hasAttribute('type')) {
 						if (this.getAttribute('type') === 'file') {
 							childInput.classList.add('sew-button', 'sew-color-primary');
-							const e=sew.elements.create('sew-button-unused', this, 'Choose file', false);
+							const e = Sew.elements.create('sew-button-unused', this, 'Choose file', false);
 							e.classList.add('sew-button', 'sew-mat-item', 'sew-color-primary');
 							e.onclick = () => {
 								childInput.click();	
@@ -743,9 +772,13 @@ const sew = {
 						}
 						childInput.setAttribute('type', this.getAttribute('type'));
 					}
+					if (this.hasAttribute('full-block')) {
+						childInput.classList.add('full-block');
+						this.removeAttribute('full-block');
+					}
 
 					if (this.hasAttribute('*change')) {
-						sew.router.pages[sew.app.getActivePage()].then(c => {
+						Sew.router.pages[Sew.app.getActivePage()].then(c => {
 							let component = new c();
 							if (this.getAttribute('type') === 'file') {
 								this.addEventListener('change', (event) => {
@@ -783,10 +816,10 @@ const sew = {
 						tab.classList.add('sew-mat-item');
 
 						tab.addEventListener('click', () => {
-							sew.elements.changeActiveTab(this, tab.getAttribute('name'));
+							Sew.elements.changeActiveTab(this, tab.getAttribute('name'));
 							if (this.hasAttribute('*change')) {
 								const fn = new Function(`
-									sew.router.pages.${sew.app.getActivePage()}.then((component) => {
+									Sew.router.pages.${Sew.app.getActivePage()}.then((component) => {
 										const activeTab = Slm.getActiveTab(Slm.get('${this.getAttribute('name')}'));
 										new component().${this.getAttribute('*change')}(activeTab.getAttribute('name'));
 									});
@@ -800,7 +833,7 @@ const sew = {
 						tabContents.classList.add('sew-navtabs-content');
 					});
 
-					sew.elements.changeActiveTab(this, this.children[0].getAttribute('name'));
+					Sew.elements.changeActiveTab(this, this.children[0].getAttribute('name'));
 				}
 			}
 		},
@@ -812,7 +845,7 @@ const sew = {
 		 * @param  {String} name The tag name of the element.
 		 * @param  {HTMLElement} parent The parent element to this element.
 		 * @param  {String} contents The HTML contents of the given element.
-		 * @param  {Boolean} emptyParent If the parent's text should be emptied while appending
+		 * @param  {Boolean} emptyParent If the parent's html contents should be emptied while appending
 		 * 
 		 * @returns {HTMLElement}
 		 */
@@ -833,7 +866,8 @@ const sew = {
 		 * Enables an element.
 		 * 
 		 * @param  {HTMLElement} element The element.
-		 * @param  {Boolean} isModal If the element is a Modal Component.
+		 * @param  {Boolean} isModal If the element is a Modal Component (enabling needs transitioning
+		 * logic for a modal).
 		 */
 		enable: (element, isModal) => {
 			if (isModal) {
@@ -858,7 +892,7 @@ const sew = {
 				setTimeout(() => {
 					element.classList.remove('sew-modal-start-hide');
 					element.classList.add('sew-modal-hidden');
-				}, 550);
+				}, 400);
 			} else {
 				element.classList.add('sew-nodisplay');
 				if (element.classList.contains('sew-visible')) {
@@ -946,15 +980,13 @@ const sew = {
 		User: {
 
 			login: () => {
-				window.globalSwContext = {};
-				window.globalSwContext.userTok = Spg.User.token().get(35);
-				console.log('Signing User...', window.globalSwContext.userTok);
+				console.log('Logging user...', Spg.User.token(35).get());
 			},
 			register: () => {},
 			update: () => {},
-			token: () => {
+			token: (randLength = 5) => {
 				return {
-					get(randLength=5){var str='';var randChar=(function(){var n=Math.floor(Math.random()*62);
+					get(){var str='';var randChar=(function(){var n=Math.floor(Math.random()*62);
 						if(n<10)return(n);if(n<36)return(String.fromCharCode(n+55));return(String.fromCharCode(n+61));});while
 						(str.length < randLength)str+=randChar();return(str);}
 				} 
@@ -964,9 +996,17 @@ const sew = {
 	},
 };
 
-const Sui = sew.elements.ui;
-const Slm = sew.elements;
-const Spg = sew.plugins;
+function $element(elementName) {
+	return Sew.elements.get(elementName);
+}
+
+function $component(componentName) {
+	return Sew.loadComponent(componentName);
+}
+
+const Sui = Sew.elements.ui;
+const Slm = Sew.elements;
+const Spg = Sew.plugins;
 
 /**
  * Thanks for peeking into the wonderous code of Sew :)

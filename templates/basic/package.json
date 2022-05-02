@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "A Sew Application.",
   "scripts": {
-  	"start": "sew dev open"
+    "start": "sew dev open"
   },
   "keywords": [
     "sew-app"
