@@ -1,5 +1,8 @@
 Sew.app.init({
-    pages: {
-        'home': Sew.loadComponent('home/home.page.js'),
-    },
+  pages: {
+    'home': $component('home/home.page.js'),
+  },
+  appPreferences: {
+    verbose: 'medium'
+  }
 });
