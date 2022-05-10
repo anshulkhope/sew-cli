@@ -1,14 +1,13 @@
 class HomePage {
-  title = 'Home | Hello World App';
-  viewUrl = 'home/home';
+	title = 'Home | Hello World';
+	viewUrl = 'home/home';
 
-  container = $element('container');
+	container = $element('container');
 	textInput = $element('textinput');
 	text = $element('text');
 
 	init() {
 		console.log('Hello World!');
-		this.container = Sew.elements.get('container');
 	}
 
 	changeColor(color) {
